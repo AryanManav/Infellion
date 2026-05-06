@@ -1,122 +1,97 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import React from "react";
 
-function App() {
-  const [count, setCount] = useState(0)
+import initialData from "./data/initialData";
+import useTreeState from "./hooks/useTreeState";
+import TreeCanvas from "./components/TreeCanvas";
+
+import {
+  GitBranch,
+  Maximize2,
+  Minimize2,
+  Layers3,
+} from "lucide-react";
+
+const App = () => {
+  const {
+    nodes,
+    edges,
+    toggleNode,
+    collapsedNodes,
+    setCollapsedNodes,
+  } = useTreeState(initialData);
+
+  const expandAll = () => {
+    setCollapsedNodes([]);
+  };
+
+  const collapseAll = () => {
+    const parentNodes = nodes
+      .filter((n) => n.data.hasChildren)
+      .map((n) => n.id);
+
+    setCollapsedNodes(parentNodes);
+  };
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="app-container">
+      {/* NAVBAR */}
 
-      <div className="ticks"></div>
+      <div className="top-navbar">
+        {/* LEFT */}
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+        <div className="nav-left">
+          <div className="brand-icon">
+            <GitBranch size={22} />
+          </div>
+
+          <div>
+            <h2>Tree View Visualizer</h2>
+
+            <p>
+              Interactive Organizational Hierarchy
+            </p>
+          </div>
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
+
+        {/* RIGHT */}
+
+        <div className="nav-right">
+          <div className="stat-card">
+            <Layers3 size={18} />
+
+            <span>{nodes.length} Nodes</span>
+          </div>
+
+          <button
+            className="nav-btn"
+            onClick={expandAll}
+          >
+            <Maximize2 size={18} />
+
+            Expand All
+          </button>
+
+          <button
+            className="nav-btn collapse"
+            onClick={collapseAll}
+          >
+            <Minimize2 size={18} />
+
+            Collapse All
+          </button>
         </div>
-      </section>
+      </div>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
-}
+      {/* TREE */}
 
-export default App
+      <TreeCanvas
+        nodes={nodes}
+        edges={edges}
+        toggleNode={toggleNode}
+        collapsedNodes={collapsedNodes}
+      />
+    </div>
+  );
+};
+
+export default App;
